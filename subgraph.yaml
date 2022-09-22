@@ -1,41 +1,64 @@
-specVersion: 0.0.1
+specVersion: 0.0.2
+description: Shepherd is a decentralised, community-owned asset management platform
 schema:
-  file: ./schema.graphql
+    file: ./schema.graphql
 dataSources:
-  - kind: ethereum
-    name: Factory
-    network: arbitrum-one
-    source:
-      address: "0xEebd543786fBaA05c912d680c0f59840e6631559"
-      abi: Factory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - AddTokensAndPriceFeeds
-        - OwnershipTransferred
-        - SetAccessManager
-        - SetFeesManager
-        - SetHarvester
-        - SetSwapContracts
-        - VaultCreated
-      abis:
-        - name: Factory
-          file: ./abis/Factory.json
-      eventHandlers:
-        - event: AddTokensAndPriceFeeds(address[],address[])
-          handler: handleAddTokensAndPriceFeeds
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
-        - event: SetAccessManager(address)
-          handler: handleSetAccessManager
-        - event: SetFeesManager(address)
-          handler: handleSetFeesManager
-        - event: SetHarvester(address)
-          handler: handleSetHarvester
-        - event: SetSwapContracts(address,address)
-          handler: handleSetSwapContracts
-        - event: VaultCreated(address,address,address[])
-          handler: handleVaultCreated
-      file: ./src/mapping.ts
+    - kind: ethereum
+      name: Factory
+      network: arbitrum-one
+      source:
+          address: "0xEebd543786fBaA05c912d680c0f59840e6631559"
+          abi: Factory
+          startBlock: 25967500
+      mapping:
+          kind: ethereum/events
+          apiVersion: 0.0.5
+          language: wasm/assemblyscript
+          file: ./src/mappings/factory.ts
+          entities:
+              - Vault
+          abis:
+              - name: Factory
+                file: ./abis/Factory.json
+              - name: Vault
+                file: ./abis/Vault.json
+              - name: ERC20
+                file: ./abis/ERC20.json
+          eventHandlers:
+              - event: VaultCreated(address,address,address[])
+                handler: handleCreateVault
+          blockHandlers:
+              - handler: handleNewBlock
+templates:
+    - kind: ethereum/contract
+      name: Vault
+      network: arbitrum-one
+      source:
+          abi: Vault
+      mapping:
+          kind: ethereum/events
+          apiVersion: 0.0.5
+          language: wasm/assemblyscript
+          file: ./src/mappings/vault.ts
+          entities:
+              - Vault
+          abis:
+              - name: Vault
+                file: ./abis/Vault.json
+              - name: Factory
+                file: ./abis/Factory.json
+              - name: ERC20
+                file: ./abis/ERC20.json
+          eventHandlers:
+              - event: Deposit(uint256,uint256)
+                handler: handleDeposit
+              - event: HarvestManagementFees(uint256,uint256)
+                handler: handleHarvestManagementFees
+              - event: HarvestPerformanceFees(uint256,uint256)
+                handler: handleHarvestPerformanceFees
+              - event: Rebalance(uint256[],uint256[])
+                handler: handleRebalance
+              - event: Redeem(uint256,uint256)
+                handler: handleRedeem
+              - event: AddAsset(address)
+                handler: handleAddAsset
