@@ -1,0 +1,41 @@
+specVersion: 0.0.1
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Factory
+    network: arbitrum-one
+    source:
+      address: "0xEebd543786fBaA05c912d680c0f59840e6631559"
+      abi: Factory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - AddTokensAndPriceFeeds
+        - OwnershipTransferred
+        - SetAccessManager
+        - SetFeesManager
+        - SetHarvester
+        - SetSwapContracts
+        - VaultCreated
+      abis:
+        - name: Factory
+          file: ./abis/Factory.json
+      eventHandlers:
+        - event: AddTokensAndPriceFeeds(address[],address[])
+          handler: handleAddTokensAndPriceFeeds
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: SetAccessManager(address)
+          handler: handleSetAccessManager
+        - event: SetFeesManager(address)
+          handler: handleSetFeesManager
+        - event: SetHarvester(address)
+          handler: handleSetHarvester
+        - event: SetSwapContracts(address,address)
+          handler: handleSetSwapContracts
+        - event: VaultCreated(address,address,address[])
+          handler: handleVaultCreated
+      file: ./src/mapping.ts
