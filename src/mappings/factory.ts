@@ -104,7 +104,7 @@ export function buildVaultSnapshot(
 
 export function handleNewBlock(block: ethereum.Block): void {
   const blockNumber = block.number;
-  if (blockNumber.toI32() % 600 != 0) return;
+  if (blockNumber.toI32() % 7500 != 0) return; // ~7500 for block time on Arbitrum
   // We snapshot only every 600 blocks (on the BSC due to 3 seconds per blocks
   // 3*600 = 1800 seconds = 30 min, and note that we can do 100 max requests without pagination)
   const factory = Factory.load(FACTORY_ADDRESS);
