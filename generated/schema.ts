@@ -8,7 +8,7 @@ import {
   store,
   Bytes,
   BigInt,
-  BigDecimal
+  BigDecimal,
 } from "@graphprotocol/graph-ts";
 
 export class Factory extends Entity {
@@ -23,10 +23,14 @@ export class Factory extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Factory must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Factory must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("Factory", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): Factory | null {
+    return changetype<Factory | null>(store.get_in_block("Factory", id));
   }
 
   static load(id: string): Factory | null {
@@ -35,7 +39,11 @@ export class Factory extends Entity {
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -44,20 +52,19 @@ export class Factory extends Entity {
 
   get vaultCount(): i32 {
     let value = this.get("vaultCount");
-    return value!.toI32();
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
   }
 
   set vaultCount(value: i32) {
     this.set("vaultCount", Value.fromI32(value));
   }
 
-  get vaults(): Array<string> {
-    let value = this.get("vaults");
-    return value!.toStringArray();
-  }
-
-  set vaults(value: Array<string>) {
-    this.set("vaults", Value.fromStringArray(value));
+  get vaults(): VaultLoader {
+    return new VaultLoader("Factory", this.get("id")!.toString(), "vaults");
   }
 }
 
@@ -73,10 +80,14 @@ export class Vault extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Vault must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Vault must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("Vault", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): Vault | null {
+    return changetype<Vault | null>(store.get_in_block("Vault", id));
   }
 
   static load(id: string): Vault | null {
@@ -85,7 +96,11 @@ export class Vault extends Entity {
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -94,7 +109,11 @@ export class Vault extends Entity {
 
   get factory(): string {
     let value = this.get("factory");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set factory(value: string) {
@@ -103,7 +122,11 @@ export class Vault extends Entity {
 
   get vault(): Bytes {
     let value = this.get("vault");
-    return value!.toBytes();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
   }
 
   set vault(value: Bytes) {
@@ -112,7 +135,11 @@ export class Vault extends Entity {
 
   get creator(): Bytes {
     let value = this.get("creator");
-    return value!.toBytes();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
   }
 
   set creator(value: Bytes) {
@@ -121,7 +148,11 @@ export class Vault extends Entity {
 
   get share(): Bytes {
     let value = this.get("share");
-    return value!.toBytes();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
   }
 
   set share(value: Bytes) {
@@ -130,7 +161,11 @@ export class Vault extends Entity {
 
   get tokens(): Array<Bytes> {
     let value = this.get("tokens");
-    return value!.toBytesArray();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
   }
 
   set tokens(value: Array<Bytes>) {
@@ -139,7 +174,11 @@ export class Vault extends Entity {
 
   get accManagementFeesToDAO(): BigInt {
     let value = this.get("accManagementFeesToDAO");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set accManagementFeesToDAO(value: BigInt) {
@@ -148,7 +187,11 @@ export class Vault extends Entity {
 
   get accPerformanceFeesToDAO(): BigInt {
     let value = this.get("accPerformanceFeesToDAO");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set accPerformanceFeesToDAO(value: BigInt) {
@@ -157,7 +200,11 @@ export class Vault extends Entity {
 
   get accManagementFeesToStrategists(): BigInt {
     let value = this.get("accManagementFeesToStrategists");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set accManagementFeesToStrategists(value: BigInt) {
@@ -166,43 +213,40 @@ export class Vault extends Entity {
 
   get accPerformanceFeesToStrategists(): BigInt {
     let value = this.get("accPerformanceFeesToStrategists");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set accPerformanceFeesToStrategists(value: BigInt) {
     this.set("accPerformanceFeesToStrategists", Value.fromBigInt(value));
   }
 
-  get deposits(): Array<string> {
-    let value = this.get("deposits");
-    return value!.toStringArray();
+  get deposits(): DepositLoader {
+    return new DepositLoader("Vault", this.get("id")!.toString(), "deposits");
   }
 
-  set deposits(value: Array<string>) {
-    this.set("deposits", Value.fromStringArray(value));
+  get rebalances(): RebalanceLoader {
+    return new RebalanceLoader(
+      "Vault",
+      this.get("id")!.toString(),
+      "rebalances",
+    );
   }
 
-  get rebalances(): Array<string> {
-    let value = this.get("rebalances");
-    return value!.toStringArray();
-  }
-
-  set rebalances(value: Array<string>) {
-    this.set("rebalances", Value.fromStringArray(value));
-  }
-
-  get redemptions(): Array<string> {
-    let value = this.get("redemptions");
-    return value!.toStringArray();
-  }
-
-  set redemptions(value: Array<string>) {
-    this.set("redemptions", Value.fromStringArray(value));
+  get redemptions(): RedeemLoader {
+    return new RedeemLoader("Vault", this.get("id")!.toString(), "redemptions");
   }
 
   get depositsCount(): i32 {
     let value = this.get("depositsCount");
-    return value!.toI32();
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
   }
 
   set depositsCount(value: i32) {
@@ -211,7 +255,11 @@ export class Vault extends Entity {
 
   get rebalancesCount(): i32 {
     let value = this.get("rebalancesCount");
-    return value!.toI32();
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
   }
 
   set rebalancesCount(value: i32) {
@@ -220,38 +268,39 @@ export class Vault extends Entity {
 
   get redemptionsCount(): i32 {
     let value = this.get("redemptionsCount");
-    return value!.toI32();
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
   }
 
   set redemptionsCount(value: i32) {
     this.set("redemptionsCount", Value.fromI32(value));
   }
 
-  get managementFeesHarvests(): Array<string> {
-    let value = this.get("managementFeesHarvests");
-    return value!.toStringArray();
+  get managementFeesHarvests(): HarvestManagementFeesLoader {
+    return new HarvestManagementFeesLoader(
+      "Vault",
+      this.get("id")!.toString(),
+      "managementFeesHarvests",
+    );
   }
 
-  set managementFeesHarvests(value: Array<string>) {
-    this.set("managementFeesHarvests", Value.fromStringArray(value));
+  get performanceFeesHarvests(): HarvestPerformanceFeesLoader {
+    return new HarvestPerformanceFeesLoader(
+      "Vault",
+      this.get("id")!.toString(),
+      "performanceFeesHarvests",
+    );
   }
 
-  get performanceFeesHarvests(): Array<string> {
-    let value = this.get("performanceFeesHarvests");
-    return value!.toStringArray();
-  }
-
-  set performanceFeesHarvests(value: Array<string>) {
-    this.set("performanceFeesHarvests", Value.fromStringArray(value));
-  }
-
-  get snapshots(): Array<string> {
-    let value = this.get("snapshots");
-    return value!.toStringArray();
-  }
-
-  set snapshots(value: Array<string>) {
-    this.set("snapshots", Value.fromStringArray(value));
+  get snapshots(): VaultSnapshotLoader {
+    return new VaultSnapshotLoader(
+      "Vault",
+      this.get("id")!.toString(),
+      "snapshots",
+    );
   }
 }
 
@@ -267,10 +316,16 @@ export class VaultSnapshot extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type VaultSnapshot must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type VaultSnapshot must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("VaultSnapshot", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): VaultSnapshot | null {
+    return changetype<VaultSnapshot | null>(
+      store.get_in_block("VaultSnapshot", id),
+    );
   }
 
   static load(id: string): VaultSnapshot | null {
@@ -279,7 +334,11 @@ export class VaultSnapshot extends Entity {
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -288,7 +347,11 @@ export class VaultSnapshot extends Entity {
 
   get factory(): string {
     let value = this.get("factory");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set factory(value: string) {
@@ -297,7 +360,11 @@ export class VaultSnapshot extends Entity {
 
   get vault(): string {
     let value = this.get("vault");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set vault(value: string) {
@@ -306,7 +373,11 @@ export class VaultSnapshot extends Entity {
 
   get pendingPerfFees(): BigInt {
     let value = this.get("pendingPerfFees");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set pendingPerfFees(value: BigInt) {
@@ -315,7 +386,11 @@ export class VaultSnapshot extends Entity {
 
   get pendingMngFees(): BigInt {
     let value = this.get("pendingMngFees");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set pendingMngFees(value: BigInt) {
@@ -324,7 +399,11 @@ export class VaultSnapshot extends Entity {
 
   get timestamp(): BigInt {
     let value = this.get("timestamp");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set timestamp(value: BigInt) {
@@ -333,7 +412,11 @@ export class VaultSnapshot extends Entity {
 
   get triggeredByEvent(): boolean {
     let value = this.get("triggeredByEvent");
-    return value!.toBoolean();
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
   }
 
   set triggeredByEvent(value: boolean) {
@@ -342,7 +425,11 @@ export class VaultSnapshot extends Entity {
 
   get positions(): Array<BigInt> {
     let value = this.get("positions");
-    return value!.toBigIntArray();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigIntArray();
+    }
   }
 
   set positions(value: Array<BigInt>) {
@@ -351,7 +438,11 @@ export class VaultSnapshot extends Entity {
 
   get sharePrice(): BigInt {
     let value = this.get("sharePrice");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set sharePrice(value: BigInt) {
@@ -360,7 +451,11 @@ export class VaultSnapshot extends Entity {
 
   get tvl(): BigInt {
     let value = this.get("tvl");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set tvl(value: BigInt) {
@@ -369,7 +464,11 @@ export class VaultSnapshot extends Entity {
 
   get assetsPrices(): Array<BigInt> {
     let value = this.get("assetsPrices");
-    return value!.toBigIntArray();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigIntArray();
+    }
   }
 
   set assetsPrices(value: Array<BigInt>) {
@@ -378,7 +477,11 @@ export class VaultSnapshot extends Entity {
 
   get assetsBalances(): Array<BigInt> {
     let value = this.get("assetsBalances");
-    return value!.toBigIntArray();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigIntArray();
+    }
   }
 
   set assetsBalances(value: Array<BigInt>) {
@@ -387,7 +490,11 @@ export class VaultSnapshot extends Entity {
 
   get tokens(): Array<Bytes> {
     let value = this.get("tokens");
-    return value!.toBytesArray();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytesArray();
+    }
   }
 
   set tokens(value: Array<Bytes>) {
@@ -407,10 +514,14 @@ export class Deposit extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Deposit must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Deposit must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("Deposit", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): Deposit | null {
+    return changetype<Deposit | null>(store.get_in_block("Deposit", id));
   }
 
   static load(id: string): Deposit | null {
@@ -419,7 +530,11 @@ export class Deposit extends Entity {
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -428,7 +543,11 @@ export class Deposit extends Entity {
 
   get vault(): string {
     let value = this.get("vault");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set vault(value: string) {
@@ -437,7 +556,11 @@ export class Deposit extends Entity {
 
   get from(): Bytes {
     let value = this.get("from");
-    return value!.toBytes();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
   }
 
   set from(value: Bytes) {
@@ -446,7 +569,11 @@ export class Deposit extends Entity {
 
   get baseTokenAmountIn(): BigInt {
     let value = this.get("baseTokenAmountIn");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set baseTokenAmountIn(value: BigInt) {
@@ -455,7 +582,11 @@ export class Deposit extends Entity {
 
   get sharesMinted(): BigInt {
     let value = this.get("sharesMinted");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set sharesMinted(value: BigInt) {
@@ -464,7 +595,11 @@ export class Deposit extends Entity {
 
   get timestamp(): BigInt {
     let value = this.get("timestamp");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set timestamp(value: BigInt) {
@@ -473,7 +608,11 @@ export class Deposit extends Entity {
 
   get sharePriceAfter(): BigInt {
     let value = this.get("sharePriceAfter");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set sharePriceAfter(value: BigInt) {
@@ -493,10 +632,14 @@ export class Redeem extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Redeem must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Redeem must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("Redeem", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): Redeem | null {
+    return changetype<Redeem | null>(store.get_in_block("Redeem", id));
   }
 
   static load(id: string): Redeem | null {
@@ -505,7 +648,11 @@ export class Redeem extends Entity {
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -514,7 +661,11 @@ export class Redeem extends Entity {
 
   get vault(): string {
     let value = this.get("vault");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set vault(value: string) {
@@ -523,7 +674,11 @@ export class Redeem extends Entity {
 
   get from(): Bytes {
     let value = this.get("from");
-    return value!.toBytes();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
   }
 
   set from(value: Bytes) {
@@ -532,7 +687,11 @@ export class Redeem extends Entity {
 
   get shareBurned(): BigInt {
     let value = this.get("shareBurned");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set shareBurned(value: BigInt) {
@@ -541,7 +700,11 @@ export class Redeem extends Entity {
 
   get amountReceived(): BigInt {
     let value = this.get("amountReceived");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set amountReceived(value: BigInt) {
@@ -550,7 +713,11 @@ export class Redeem extends Entity {
 
   get timestamp(): BigInt {
     let value = this.get("timestamp");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set timestamp(value: BigInt) {
@@ -559,7 +726,11 @@ export class Redeem extends Entity {
 
   get sharePriceAfter(): BigInt {
     let value = this.get("sharePriceAfter");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set sharePriceAfter(value: BigInt) {
@@ -579,10 +750,14 @@ export class Rebalance extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Rebalance must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Rebalance must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("Rebalance", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): Rebalance | null {
+    return changetype<Rebalance | null>(store.get_in_block("Rebalance", id));
   }
 
   static load(id: string): Rebalance | null {
@@ -591,7 +766,11 @@ export class Rebalance extends Entity {
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -600,7 +779,11 @@ export class Rebalance extends Entity {
 
   get vault(): string {
     let value = this.get("vault");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set vault(value: string) {
@@ -609,7 +792,11 @@ export class Rebalance extends Entity {
 
   get from(): Bytes {
     let value = this.get("from");
-    return value!.toBytes();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
   }
 
   set from(value: Bytes) {
@@ -618,7 +805,11 @@ export class Rebalance extends Entity {
 
   get desiredSignals(): Array<BigInt> {
     let value = this.get("desiredSignals");
-    return value!.toBigIntArray();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigIntArray();
+    }
   }
 
   set desiredSignals(value: Array<BigInt>) {
@@ -627,7 +818,11 @@ export class Rebalance extends Entity {
 
   get currentSignals(): Array<BigInt> {
     let value = this.get("currentSignals");
-    return value!.toBigIntArray();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigIntArray();
+    }
   }
 
   set currentSignals(value: Array<BigInt>) {
@@ -636,7 +831,11 @@ export class Rebalance extends Entity {
 
   get recordedSignals(): Array<BigInt> {
     let value = this.get("recordedSignals");
-    return value!.toBigIntArray();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigIntArray();
+    }
   }
 
   set recordedSignals(value: Array<BigInt>) {
@@ -645,7 +844,11 @@ export class Rebalance extends Entity {
 
   get timestamp(): BigInt {
     let value = this.get("timestamp");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set timestamp(value: BigInt) {
@@ -654,7 +857,11 @@ export class Rebalance extends Entity {
 
   get sharePriceAfter(): BigInt {
     let value = this.get("sharePriceAfter");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set sharePriceAfter(value: BigInt) {
@@ -672,26 +879,36 @@ export class HarvestManagementFees extends Entity {
     let id = this.get("id");
     assert(
       id != null,
-      "Cannot save HarvestManagementFees entity without an ID"
+      "Cannot save HarvestManagementFees entity without an ID",
     );
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type HarvestManagementFees must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type HarvestManagementFees must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("HarvestManagementFees", id.toString(), this);
     }
   }
 
+  static loadInBlock(id: string): HarvestManagementFees | null {
+    return changetype<HarvestManagementFees | null>(
+      store.get_in_block("HarvestManagementFees", id),
+    );
+  }
+
   static load(id: string): HarvestManagementFees | null {
     return changetype<HarvestManagementFees | null>(
-      store.get("HarvestManagementFees", id)
+      store.get("HarvestManagementFees", id),
     );
   }
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -700,7 +917,11 @@ export class HarvestManagementFees extends Entity {
 
   get vault(): string {
     let value = this.get("vault");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set vault(value: string) {
@@ -709,7 +930,11 @@ export class HarvestManagementFees extends Entity {
 
   get from(): Bytes {
     let value = this.get("from");
-    return value!.toBytes();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
   }
 
   set from(value: Bytes) {
@@ -718,7 +943,11 @@ export class HarvestManagementFees extends Entity {
 
   get amountToDAO(): BigInt {
     let value = this.get("amountToDAO");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set amountToDAO(value: BigInt) {
@@ -727,7 +956,11 @@ export class HarvestManagementFees extends Entity {
 
   get amountToStrategist(): BigInt {
     let value = this.get("amountToStrategist");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set amountToStrategist(value: BigInt) {
@@ -736,7 +969,11 @@ export class HarvestManagementFees extends Entity {
 
   get timestamp(): BigInt {
     let value = this.get("timestamp");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set timestamp(value: BigInt) {
@@ -754,26 +991,36 @@ export class HarvestPerformanceFees extends Entity {
     let id = this.get("id");
     assert(
       id != null,
-      "Cannot save HarvestPerformanceFees entity without an ID"
+      "Cannot save HarvestPerformanceFees entity without an ID",
     );
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type HarvestPerformanceFees must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type HarvestPerformanceFees must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("HarvestPerformanceFees", id.toString(), this);
     }
   }
 
+  static loadInBlock(id: string): HarvestPerformanceFees | null {
+    return changetype<HarvestPerformanceFees | null>(
+      store.get_in_block("HarvestPerformanceFees", id),
+    );
+  }
+
   static load(id: string): HarvestPerformanceFees | null {
     return changetype<HarvestPerformanceFees | null>(
-      store.get("HarvestPerformanceFees", id)
+      store.get("HarvestPerformanceFees", id),
     );
   }
 
   get id(): string {
     let value = this.get("id");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set id(value: string) {
@@ -782,7 +1029,11 @@ export class HarvestPerformanceFees extends Entity {
 
   get vault(): string {
     let value = this.get("vault");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
   }
 
   set vault(value: string) {
@@ -791,7 +1042,11 @@ export class HarvestPerformanceFees extends Entity {
 
   get from(): Bytes {
     let value = this.get("from");
-    return value!.toBytes();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
   }
 
   set from(value: Bytes) {
@@ -800,7 +1055,11 @@ export class HarvestPerformanceFees extends Entity {
 
   get amountToDAO(): BigInt {
     let value = this.get("amountToDAO");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set amountToDAO(value: BigInt) {
@@ -809,7 +1068,11 @@ export class HarvestPerformanceFees extends Entity {
 
   get amountToStrategist(): BigInt {
     let value = this.get("amountToStrategist");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set amountToStrategist(value: BigInt) {
@@ -818,10 +1081,140 @@ export class HarvestPerformanceFees extends Entity {
 
   get timestamp(): BigInt {
     let value = this.get("timestamp");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
   }
 
   set timestamp(value: BigInt) {
     this.set("timestamp", Value.fromBigInt(value));
+  }
+}
+
+export class VaultLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Vault[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Vault[]>(value);
+  }
+}
+
+export class DepositLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Deposit[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Deposit[]>(value);
+  }
+}
+
+export class RebalanceLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Rebalance[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Rebalance[]>(value);
+  }
+}
+
+export class RedeemLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Redeem[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Redeem[]>(value);
+  }
+}
+
+export class HarvestManagementFeesLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): HarvestManagementFees[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<HarvestManagementFees[]>(value);
+  }
+}
+
+export class HarvestPerformanceFeesLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): HarvestPerformanceFees[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<HarvestPerformanceFees[]>(value);
+  }
+}
+
+export class VaultSnapshotLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): VaultSnapshot[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<VaultSnapshot[]>(value);
   }
 }
